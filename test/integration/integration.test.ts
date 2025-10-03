@@ -5,14 +5,12 @@ import { assert, expect } from 'chai';
 
 import {
     config as defaultConfig,
-    ErrorFlow,
     ErrorTypes,
     IRulesConfig,
     KeyModelWithLanguages,
     LanguagesModel,
     ReactI18nextLint,
     ResultCliModel,
-    ResultErrorModel,
     ToggleRule,
 } from './../../src/core';
 
@@ -20,7 +18,6 @@ import { assertFullModel } from './results/arguments.full';
 import { assertDefaultModel } from './results/default.full';
 import { assertCustomConfig } from './results/custom.config';
 import { configValues } from './results/config.values';
-import { getAbsolutePath, projectFolder } from './utils';
 
 /*
 TODO: RL: Keys
@@ -41,7 +38,7 @@ describe('Core Integration', () => {
     const languagesAbsentMaskPath: string = './test/integration/inputs/locales';
 
     describe('Custom RegExp to find keys', () => {
-       it('should be find keys', () => {
+       it('should be find keys', async () => {
            // Arrange
            const errorConfig: IRulesConfig = {
                ...defaultConfig.defaultValues.rules,
@@ -50,28 +47,28 @@ describe('Core Integration', () => {
 
            // Act
            const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, undefined, errorConfig);
-           const result: ResultCliModel = model.lint();
+           const result: ResultCliModel =  await model.lint();
 
            // Assert
            assert.deepEqual(result.errors.find(x => x.value === 'CUSTOM.REGEXP.ONE')?.errorType, ErrorTypes.warning);
        });
     });
     describe('Empty Keys', () => {
-        it('should be warning by default', () => {
+        it('should be warning by default', async () => {
             // Arrange
             const hasEmptyKeys: boolean = true;
             const countEmptyKeys: number = 1;
             const errorType: ErrorTypes = ErrorTypes.warning;
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel =  await model.lint();
 
             // Assert
             assert.deepEqual(errorType, result.getEmptyKeys()[0].errorType);
             assert.deepEqual(hasEmptyKeys, result.hasEmptyKeys());
             assert.deepEqual(countEmptyKeys, result.countEmptyKeys());
         });
-        it('should be error', () => {
+        it('should be error', async () => {
             // Arrange
             const hasEmptyKeys: boolean = true;
             const countEmptyKeys: number = 1;
@@ -82,7 +79,7 @@ describe('Core Integration', () => {
             };
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, undefined, errorConfig);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(errorType, result.getEmptyKeys()[0].errorType);
@@ -90,17 +87,16 @@ describe('Core Integration', () => {
             assert.deepEqual(countEmptyKeys, result.countEmptyKeys());
         });
     });
-
-    describe('Warnings', () => {
-        it('should be 0 by default', () => {
+    describe('Warnings', async () => {
+        it('should be 0 by default',async () => {
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath);
-            const result:  ResultCliModel = model.lint();
+            const result:  ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(0, result.maxCountWarning);
         });
-        it('should be error if warnings more thant 2', () => {
+        it('should be error if warnings more thant 2', async () => {
             // Arrange
             const ignorePath: string = '';
             const maxWarnings: number = 5;
@@ -117,20 +113,20 @@ describe('Core Integration', () => {
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, ignorePath, errorConfig);
-            const result:  ResultCliModel = model.lint(maxWarnings);
+            const result:  ResultCliModel =  await model.lint(maxWarnings);
 
             // Assert
             assert.deepEqual(ifFullOfWarning, result.isFullOfWarning());
             assert.deepEqual(maxWarnings, result.maxCountWarning);
         });
-        it('should be warning if warnings less thant 10', () => {
+        it('should be warning if warnings less thant 10', async () => {
             // Arrange
             const maxWarnings: number = 20;
             const ifFullOfWarning: boolean = false;
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath);
-            const result: ResultCliModel = model.lint(maxWarnings);
+            const result: ResultCliModel = await model.lint(maxWarnings);
 
             // Assert
             assert.deepEqual(ifFullOfWarning, result.isFullOfWarning());
@@ -138,7 +134,7 @@ describe('Core Integration', () => {
         });
     });
     describe('Ignore', () => {
-        it('should be relative and absolute and have projects and languages files', () => {
+        it('should be relative and absolute and have projects and languages files', async () => {
             // Arrange
             const ignoreAbsoluteProjectPath: string = path.resolve(__dirname, process.cwd(), projectIgnorePath);
             const ignorePath: string = `${languagesIgnorePath}, ${ignoreAbsoluteProjectPath}`;
@@ -149,38 +145,38 @@ describe('Core Integration', () => {
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, ignorePath, errorConfig);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertFullModel, result.errors);
         });
 
-        it('should be empty or incorrect', () => {
+        it('should be empty or incorrect', async () => {
             // Arrange
             const ignorePath: string = `null, 0, undefined, '',`;
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, ignorePath);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertDefaultModel, result.errors);
         });
     });
-    describe('Path', () => {
-        it('should be relative and absolute', () => {
+    describe('Path', async () => {
+        it('should be relative and absolute', async () => {
             // Arrange
             const absolutePathProject: string = path.resolve(__dirname, process.cwd(), projectWithMaskPath);
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(absolutePathProject, languagesWithMaskPath);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertDefaultModel, result.errors);
         });
 
-        it('should be absent mask', () => {
+        it('should be absent mask', async () => {
             // Arrange
             const ignorePath: string = `${languagesIgnorePath}, ${projectIgnorePath}, ${languagesIncorrectFile}`;
             const errorConfig: IRulesConfig = {
@@ -189,12 +185,12 @@ describe('Core Integration', () => {
             };
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectAbsentMaskPath, languagesAbsentMaskPath, ignorePath, errorConfig);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertFullModel, result.errors);
         });
-        it('should be empty and incorrect', () => {
+        it('should be empty and incorrect', async () => {
             // Arrange
             const emptyFolder: string = '';
             const incorrectFolder: string = '../files';
@@ -203,10 +199,15 @@ describe('Core Integration', () => {
             const model: ReactI18nextLint = new ReactI18nextLint(emptyFolder, incorrectFolder);
 
             // Assert
-            expect(() => { model.lint(); }).to.throw();
+            try {
+                await model.lint();
+                assert.fail('Expected lint to throw');
+            } catch (error) {
+                expect(error).to.be.an('error');
+            }
         });
 
-        it('should with parse error', () => {
+        it('should with parse error', async () => {
             // Arrange
             const absoluteIncorrectLanguagesPath: string = path.resolve(__dirname, process.cwd(), languagesIncorrectFile);
             const errorMessage: string = `Can't parse JSON file: ${absoluteIncorrectLanguagesPath}`;
@@ -215,21 +216,25 @@ describe('Core Integration', () => {
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesIncorrectFile);
 
             // Assert
-            // model.lint();
-            assert.throws(() => { model.lint(); }, errorMessage);
+            try {
+                await model.lint();
+                assert.fail('Expected lint to throw');
+            } catch (error) {
+                assert.equal((error as Error).message, errorMessage);
+            }
         });
     });
 
-    describe('Config', () => {
-        it('should be default', () => {
+    describe('Config', async () => {
+        it('should be default', async () => {
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath);
-            const result:  ResultCliModel = model.lint();
+            const result:  ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertDefaultModel, result.errors);
         });
-        it('should be incorrect', () => {
+        it('should be incorrect', async () => {
             // Arrange
             const errorConfig: object = {
                 keysOnViews: 'incorrect',
@@ -240,9 +245,14 @@ describe('Core Integration', () => {
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, ignorePath, errorConfig as IRulesConfig);
 
             // Assert
-            expect(() => { model.lint(); }).to.throw();
+            try {
+                await model.lint();
+                assert.fail('Expected lint to throw');
+            } catch (error) {
+                expect(error).to.be.an('error');
+            }
         });
-        it('should be custom', () => {
+        it('should be custom', async () => {
             // Arrange
             const errorConfig: IRulesConfig = {
                 keysOnViews: ErrorTypes.warning,
@@ -256,7 +266,7 @@ describe('Core Integration', () => {
 
             // Act
             const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath, ignorePath, errorConfig);
-            const result: ResultCliModel = model.lint();
+            const result: ResultCliModel = await model.lint();
 
             // Assert
             assert.deepEqual(assertCustomConfig, result.errors);
@@ -264,7 +274,7 @@ describe('Core Integration', () => {
     });
     describe('API', () => {
         describe('getLanguages', () => {
-           it('should be correct', () => {
+           it('should be correct', async() => {
                // Arrange
                const countOfLanguage: number = 2;
                // Act
@@ -276,7 +286,7 @@ describe('Core Integration', () => {
            });
         });
         describe('getKeys', () => {
-            it('should be correct', () => {
+            it('should be correct',  async () => {
                 // Arrange
                  const countOfKeys: number = configValues.totalKeys;
                 // Act
@@ -288,7 +298,7 @@ describe('Core Integration', () => {
             });
         });
     });
-    it('with full arguments', () => {
+    it('with full arguments', async () => {
         // Arrange
         const errorConfig: IRulesConfig = {
             keysOnViews: ErrorTypes.error,
@@ -305,7 +315,7 @@ describe('Core Integration', () => {
 
         // Act
         const model: ReactI18nextLint = new ReactI18nextLint(absolutePathProject, languagesWithMaskPath, ignorePath, errorConfig);
-        const result: ResultCliModel = model.lint();
+        const result: ResultCliModel = await model.lint();
 
         // Assert
         assert.deepEqual(assertFullModel, result.errors);
