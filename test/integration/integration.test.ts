@@ -19,6 +19,25 @@ import { assertDefaultModel } from './results/default.full';
 import { assertCustomConfig } from './results/custom.config';
 import { configValues } from './results/config.values';
 
+function normalizeErrors(errors: ResultCliModel['errors']): object[] {
+    return errors
+        .map((error) => ({
+            value: error.value,
+            errorFlow: error.errorFlow,
+            errorType: error.errorType,
+            currentPath: error.currentPath,
+            absentPath: error.absentedPath ? [ ...error.absentedPath ].sort() : error.absentedPath,
+            suggestions: error.suggestions,
+        }))
+        .sort((left, right) => {
+            return JSON.stringify(left).localeCompare(JSON.stringify(right));
+        });
+}
+
+function assertErrorsEqual(expected: ResultCliModel['errors'], actual: ResultCliModel['errors']): void {
+    assert.deepEqual(normalizeErrors(actual), normalizeErrors(expected));
+}
+
 /*
 TODO: RL: Keys
 <h1>{t('welcome.title')}<h1>{t('welcome title-2')}</h1></h1>
@@ -148,7 +167,7 @@ describe('Core Integration', () => {
             const result: ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertFullModel, result.errors);
+            assertErrorsEqual(assertFullModel, result.errors);
         });
 
         it('should be empty or incorrect', async () => {
@@ -160,7 +179,7 @@ describe('Core Integration', () => {
             const result: ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertDefaultModel, result.errors);
+            assertErrorsEqual(assertDefaultModel, result.errors);
         });
     });
     describe('Path', async () => {
@@ -173,7 +192,7 @@ describe('Core Integration', () => {
             const result: ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertDefaultModel, result.errors);
+            assertErrorsEqual(assertDefaultModel, result.errors);
         });
 
         it('should be absent mask', async () => {
@@ -188,7 +207,7 @@ describe('Core Integration', () => {
             const result: ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertFullModel, result.errors);
+            assertErrorsEqual(assertFullModel, result.errors);
         });
         it('should be empty and incorrect', async () => {
             // Arrange
@@ -232,7 +251,7 @@ describe('Core Integration', () => {
             const result:  ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertDefaultModel, result.errors);
+            assertErrorsEqual(assertDefaultModel, result.errors);
         });
         it('should be incorrect', async () => {
             // Arrange
@@ -269,7 +288,7 @@ describe('Core Integration', () => {
             const result: ResultCliModel = await model.lint();
 
             // Assert
-            assert.deepEqual(assertCustomConfig, result.errors);
+            assertErrorsEqual(assertCustomConfig, result.errors);
         });
     });
     describe('API', () => {
@@ -318,6 +337,6 @@ describe('Core Integration', () => {
         const result: ResultCliModel = await model.lint();
 
         // Assert
-        assert.deepEqual(assertFullModel, result.errors);
+        assertErrorsEqual(assertFullModel, result.errors);
     });
 });

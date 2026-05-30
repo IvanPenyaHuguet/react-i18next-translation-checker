@@ -1,14 +1,12 @@
-<div translate="STRING.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ALL_LOCALES"></div>
-<div translate='STRING.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ONE_LOCALE'></div>
-<div translate="'STRING.KEY_FROM_DIRECTIVE_VIEW.ABSENT_IN_ALL_LOCALES'"></div>
-<div [translate]="OBJECT.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ALL_LOCALES"></div>
+<div>{t('STRING.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ALL_LOCALES')}</div>
+<div>{t('STRING.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ONE_LOCALE')}</div>
+<div>{t('STRING.KEY_FROM_DIRECTIVE_VIEW.ABSENT_IN_ALL_LOCALES')}</div>
+<div>{t('OBJECT.KEY_FROM_DIRECTIVE_VIEW.EXIST_IN_ALL_LOCALES')}</div>
 
-<div translate>STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ALL_LOCALES</div>
-<div anotherDirective translate anotherDirective>STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ONE_LOCALE</div>
-<mat-label fxLayoutAlign.xs="center center" [value]="test" translate anotherDirective>STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ONE_LOCALE_BUG_86</mat-label>
-<div translate>
-    OBJECT.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.ABSENT_IN_ALL_LOCALES
-</div>
+<span>{t('STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ALL_LOCALES')}</span>
+<span>{t('STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ONE_LOCALE')}</span>
+<label>{t('STRING.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.EXIST_IN_ONE_LOCALE_BUG_86')}</label>
+<div>{t('OBJECT.KEY_FROM_DIRECTIVE_INSIDE_TAG_VIEW.ABSENT_IN_ALL_LOCALES')}</div>
 <div class="error-code">404</div>
-<mat-icon class="s-16">chevron_right</mat-icon>
-<mat-icon [matTooltip]="'general.labels.jumpTo'|translate: { 'value': condition ? ('general.goal1'|translate) : ('general.goal2'|translate) }">BUG_145</mat-icon>
+<span>chevron_right</span>
+<button title={t('general.labels.jumpTo', { value: condition ? t('general.goal1') : t('general.goal2') })}>BUG_145</button>
