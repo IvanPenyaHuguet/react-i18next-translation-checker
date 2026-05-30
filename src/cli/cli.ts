@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import commander, { Option } from 'commander';
 
 import { OptionModel } from './models';
 import {
@@ -10,12 +9,12 @@ import {
     ResultCliModel,
     ResultModel,
     StatusCodes,
-    ToggleRule
+    ToggleRule,
+    red,
 } from "./../core";
 
 import { config } from './../core/config';
 import { OptionsLongNames } from './enums';
-import chalk from 'chalk';
 import { parseJsonFile, getPackageJsonPath } from './utils';
 
 const name: string = 'react-i18next-translation-checker';
@@ -39,7 +38,7 @@ Examples:
 
 class Cli {
     // tslint:disable-next-line:no-any
-    private cliClient: any = commander.program;
+    private cliClient: any;
     private cliOptions: OptionModel[] = [];
 
     constructor(options: OptionModel[]) {
@@ -48,17 +47,21 @@ class Cli {
 
     public static async run(options: OptionModel[]): Promise<void> {
         const cli: Cli = new Cli(options);
-        cli.init();
+        await cli.init();
         cli.parse();
         await cli.runCli();
     }
 
-    public init(options: OptionModel[] = this.cliOptions): void {
+    public async init(options: OptionModel[] = this.cliOptions): Promise<void> {
+        // tslint:disable-next-line:no-any
+        const commander: any = await import('commander');
+        this.cliClient = commander.program;
+
         options.forEach((option: OptionModel) => {
             const optionFlag: string = option.getFlag();
             const optionDescription: string = option.getDescription();
             const optionDefaultValue: string | ErrorTypes | undefined = option.default;
-            this.cliClient.addOption(new Option(optionFlag, optionDescription).default(optionDefaultValue));
+            this.cliClient.addOption(new commander.Option(optionFlag, optionDescription).default(optionDefaultValue));
         });
 
         // tslint:disable-next-line:no-any
@@ -187,7 +190,7 @@ class Cli {
             process.exitCode = resultCliModel.exitCode();
 
             if (resultModel.hasError) {
-                throw new FatalErrorModel(chalk.red(resultModel.message));
+                throw new FatalErrorModel(red(resultModel.message));
             }
     }
 

@@ -1,7 +1,6 @@
-import chalk from "chalk";
-
 import { ILogger } from "./../interface";
 import { ErrorTypes } from "./../enums";
+import { red, yellow } from './../utils';
 
 class StylishLogger implements ILogger {
     private logger: ILogger;
@@ -17,12 +16,12 @@ class StylishLogger implements ILogger {
 
     public error(message: string): void {
         // tslint:disable-next-line:no-console
-        console.error(chalk.red(message));
+        console.error(red(message));
     }
 
     public log(message: string): void {
         // tslint:disable-next-line:no-console
-        console.log(chalk.yellow(message));
+        console.log(yellow(message));
     }
 
     public printMessage(message: string, errorType: ErrorTypes = this.errorType): void {
