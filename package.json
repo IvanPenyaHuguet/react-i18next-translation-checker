@@ -1,7 +1,7 @@
 {
   "author": "Raman Lauryniuk <romanrostislavovich@gmail.com>",
   "name": "react-i18next-translation-checker",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Simple tools for check `react-i18next` keys in app",
   "license": "MIT",
   "repository": "IvanPenyaHuguet/react-i18next-translation-checker",
