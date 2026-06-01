@@ -7,7 +7,7 @@
 [![download npm](https://img.shields.io/npm/dm/react-i18next-translation-checker.svg)](https://www.npmjs.com/package/react-i18next-translation-checker)
 
 > Fork of https://github.com/romanrostislavovich/react-i18next-lint, we are thank you for their work in creating this package.
-> Updated dependencies, no other change
+> Updated dependencies, and exported as ESM package.
 >
 > for `react-intl` use [`react-intl-lint`](https://www.npmjs.com/package/react-intl-lint)
 >
@@ -165,7 +165,14 @@ The CLI process may exit with the following codes:
 ### TypeScript
 
 ```typescript
-import { ToggleRule, ReactI18nextLint, IRulesConfig, ResultCliModel, ErrorTypes, LanguagesModel } from 'react-i18next-translation-checker';
+import {
+    ToggleRule,
+    ReactI18nextLint,
+    ResultCliModel,
+    ErrorTypes,
+    LanguagesModel
+} from 'react-i18next-translation-checker';
+import type { IRulesConfig } from 'react-i18next-translation-checker';
 
 const viewsPath: string = './src/app/**/*.{html,ts,js}';
 const languagesPath: string = './src/assets/i18n/*.json';
@@ -181,10 +188,25 @@ const ruleConfig: IRulesConfig = {
 };
 
 const reactI18nLint = new ReactI18nextLint(viewsPath, languagesPath, ignoredLanguagesPath, ruleConfig)
-const resultLint: ResultCliModel = reactI18nLint.lint(); // Run Lint
+const resultLint: ResultCliModel = reactI18nLint.lint(); // Run sync lint
 const languages: LanguagesModel[] = reactI18nLint.getLanguages()  // Get Languages with all keys and views
 
 ```
+
+`lint()` is synchronous and remains the stable public API for local language
+files.
+
+Use `lintAsync()` when you need a Promise-based API, especially when
+`languagesPath` is a URL:
+
+```typescript
+const resultLint: ResultCliModel = await reactI18nLint.lintAsync();
+```
+
+The CLI class follows the same compatibility rule:
+
+- `Cli.run()`, `Cli.init()`, `Cli.runCli()` and `Cli.runLint()` are synchronous.
+- `Cli.runAsync()`, `Cli.runCliAsync()` and `Cli.runLintAsync()` are Promise-based.
 
 #### NOTE!
 If you have error `Can't resolve 'fs' in ...`. Please add next setting to you project:

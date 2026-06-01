@@ -1,5 +1,5 @@
-export * from './IRule';
-export * from './ILogger';
-export * from './IAppConfig';
-export * from './IRulesConfig';
-export * from './IValidationMessage';
+export type { IRule } from './IRule';
+export type { ILogger } from './ILogger';
+export type { IAppConfig } from './IAppConfig';
+export type { IRulesConfig } from './IRulesConfig';
+export type { IValidationMessage } from './IValidationMessage';

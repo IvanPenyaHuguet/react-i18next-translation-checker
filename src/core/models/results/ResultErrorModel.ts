@@ -1,5 +1,5 @@
-import { isArray } from 'lodash';
-import { IValidationMessage } from '../../interface';
+import { isArray } from 'lodash-es';
+import type { IValidationMessage } from '../../interface';
 import { ErrorFlow, ErrorTypes } from '../../enums';
 
 class ResultErrorModel implements IValidationMessage  {

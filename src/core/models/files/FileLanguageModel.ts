@@ -1,4 +1,4 @@
-import { get, transform } from 'lodash';
+import { get } from 'lodash-es';
 
 import { KeyModel } from '../KeyModel';
 import { FileModel } from './FileModel';

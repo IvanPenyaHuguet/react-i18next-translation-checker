@@ -1,8 +1,8 @@
-declare class ErrorModel {
-    public name?: string;
-    public message: string;
-    public stack?: string;
-    constructor(message?: string);
+// tslint:disable-next-line:interface-name
+interface ErrorModel {
+    name?: string;
+    message: string;
+    stack?: string;
 }
 
-export { ErrorModel };
+export type { ErrorModel };

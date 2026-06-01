@@ -1,4 +1,4 @@
-import { ILogger } from "./../interface";
+import type { ILogger } from "./../interface";
 import { ErrorTypes } from "./../enums";
 import { red, yellow } from './../utils';
 

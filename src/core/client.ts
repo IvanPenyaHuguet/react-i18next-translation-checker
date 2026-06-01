@@ -1,13 +1,12 @@
-import { flatMap } from 'lodash';
+import { flatMap } from 'lodash-es';
 import * as path from 'node:path';
 import { config } from './config';
 import { ErrorTypes } from './enums';
-import { IRulesConfig } from './interface';
+import type { IRulesConfig } from './interface';
 import { Http, KeysUtils } from './utils';
 import { FileLanguageModel, FileViewModel, KeyModel, LanguagesModel, ResultCliModel, ResultErrorModel } from './models';
 import { AbsentViewKeysRule, ZombieRule, EmptyKeysRule } from './rules';
 import { KeyModelWithLanguages, LanguagesModelWithKey, ViewModelWithKey } from './models/KeyModelWithLanguages';
-
 
 class ReactI18nextLint {
     public rules: IRulesConfig;
@@ -31,24 +30,30 @@ class ReactI18nextLint {
         this.tsConfigPath = tsConfigPath;
     }
 
-    public async lint(maxWarning?: number): Promise<ResultCliModel> {
-        if (!(this.projectPath && this.languagesPath)) {
-            throw new Error(`Path to project or languages is incorrect`);
+    public lint(maxWarning?: number): ResultCliModel {
+        this.validateLintConfig();
+
+        if (this.isLanguagesPathUrl()) {
+            throw new Error('URL language paths require lintAsync');
         }
 
-        if (!('zombieKeys' in this.rules)) {
-            throw new Error('Error config is incorrect');
+        const languagesKeys: FileLanguageModel = new FileLanguageModel(this.languagesPath, [], [], this.ignore).getKeysWithValue();
+        return this.lintWithLanguages(languagesKeys, maxWarning);
+    }
+
+    public async lintAsync(maxWarning?: number): Promise<ResultCliModel> {
+        this.validateLintConfig();
+
+        if (!this.isLanguagesPathUrl()) {
+            return this.lint(maxWarning);
         }
 
-        const languageIsURL: boolean = this.languagesPath.includes('http') || this.languagesPath.includes('https');
-        let languagesKeys: FileLanguageModel;
-        if (languageIsURL) {
-            const fileData: string = await Http.get(this.languagesPath);
-            languagesKeys = new FileLanguageModel(this.languagesPath, [], [], this.ignore, fileData, true).getKeysWithValue();
-        } else {
-            languagesKeys = new FileLanguageModel(this.languagesPath, [], [], this.ignore).getKeysWithValue();
-        }
+        const fileData: string = await Http.get(this.languagesPath);
+        const languagesKeys: FileLanguageModel = new FileLanguageModel(this.languagesPath, [], [], this.ignore, fileData, true).getKeysWithValue();
+        return this.lintWithLanguages(languagesKeys, maxWarning);
+    }
 
+    private lintWithLanguages(languagesKeys: FileLanguageModel, maxWarning?: number): ResultCliModel {
         const languagesKeysNames: string[] = flatMap(languagesKeys.keys, (key: KeyModel) => key.name);
         const viewsRegExp: RegExp = KeysUtils.findKeysList(languagesKeysNames, this.rules.customRegExpToFindKeys, this.rules.deepSearch);
 
@@ -86,6 +91,20 @@ class ReactI18nextLint {
 
         const cliResult: ResultCliModel = new ResultCliModel(errors, maxWarning);
         return cliResult;
+    }
+
+    private validateLintConfig(): void {
+        if (!(this.projectPath && this.languagesPath)) {
+            throw new Error(`Path to project or languages is incorrect`);
+        }
+
+        if (!('zombieKeys' in this.rules)) {
+            throw new Error('Error config is incorrect');
+        }
+    }
+
+    private isLanguagesPathUrl(): boolean {
+        return this.languagesPath.includes('http') || this.languagesPath.includes('https');
     }
 
     public getLanguages(): LanguagesModel[] {

@@ -8,4 +8,4 @@ interface IRule {
     check(viewKeys: KeyModel[] | ResultErrorModel[], languagesKeys: KeyModel[] | ResultErrorModel[]): ResultErrorModel[];
 }
 
-export { IRule };
+export type { IRule };

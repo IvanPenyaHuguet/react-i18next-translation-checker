@@ -1,4 +1,4 @@
-import { chain, some } from 'lodash';
+import { chain, some } from 'lodash-es';
 
 import { logger } from '../../utils';
 import { ResultModel } from './ResultModel';

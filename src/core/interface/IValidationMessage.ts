@@ -3,4 +3,4 @@ interface IValidationMessage {
     message(): string[] | string | null;
 }
 
-export { IValidationMessage };
+export type { IValidationMessage };
