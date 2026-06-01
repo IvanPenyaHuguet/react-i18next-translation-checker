@@ -1,5 +1,5 @@
 import { ErrorTypes, ToggleRule } from './enums';
-import { IAppConfig } from './interface';
+import type { IAppConfig } from './interface';
 
 const config: IAppConfig = {
     defaultValues: {

@@ -1,6 +1,6 @@
-import { differenceBy } from 'lodash';
+import { differenceBy } from 'lodash-es';
 
-import { IRule } from './../interface';
+import type { IRule } from './../interface';
 import { ErrorTypes, ErrorFlow } from './../enums';
 import { ResultErrorModel, KeyModel } from './../models';
 

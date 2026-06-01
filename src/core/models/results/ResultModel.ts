@@ -1,9 +1,9 @@
-import { isArray } from 'lodash';
+import { isArray } from 'lodash-es';
 
 import { ResultFileModel } from './ResultFileModel';
 import { ResultErrorModel } from './ResultErrorModel';
 import { ErrorFlow, ErrorTypes } from '../../enums';
-import { ILogger } from '../../interface';
+import type { ILogger } from '../../interface';
 import { StylishLogger } from '../StylishLogger';
 import { ResultCliModel } from './ResultCliModel';
 

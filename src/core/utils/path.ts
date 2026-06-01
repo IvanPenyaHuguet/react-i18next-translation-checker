@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import * as glob from 'glob';
 import dirGlob from 'dir-glob';
-import { concat } from 'lodash';
+import { concat } from 'lodash-es';
 
 class PathUtils {
     public static resolvePath(filePath: string): string {

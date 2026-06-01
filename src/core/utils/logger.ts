@@ -1,4 +1,4 @@
-import { ILogger } from "../interface";
+import type { ILogger } from "../interface";
 
 const logger: ILogger = {
     log(m: string): void {

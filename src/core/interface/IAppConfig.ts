@@ -1,4 +1,4 @@
-import { IRulesConfig } from './IRulesConfig';
+import type { IRulesConfig } from './IRulesConfig';
 
 interface IDefaultValues {
     rules: IRulesConfig;
@@ -9,4 +9,4 @@ interface IAppConfig {
     defaultValues: IDefaultValues;
 }
 
-export { IAppConfig };
+export type { IAppConfig };

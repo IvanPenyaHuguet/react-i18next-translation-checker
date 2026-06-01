@@ -1,9 +1,6 @@
 import * as fs from 'fs';
-import * as path from 'path';
 
 import { FatalErrorModel, red } from '../../core';
-
-const packageJsonPath: string = './package.json';
 
 // tslint:disable-next-line:no-any
 function parseJsonFile(filePath: string): any {
@@ -16,12 +13,6 @@ function parseJsonFile(filePath: string): any {
     return result;
 }
 
-function getPackageJsonPath(): string {
-    const result: string = path.resolve(__dirname,  '../../../../', packageJsonPath);
-    return result;
-}
-
 export {
-    getPackageJsonPath,
     parseJsonFile
 };

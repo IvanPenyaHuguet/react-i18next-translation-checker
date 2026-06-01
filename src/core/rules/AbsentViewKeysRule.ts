@@ -1,7 +1,7 @@
 import * as path  from 'node:path';
-import { differenceBy } from 'lodash';
+import { differenceBy } from 'lodash-es';
 
-import { IRule } from './../interface';
+import type { IRule } from './../interface';
 import { KeysUtils } from './../utils';
 import { ErrorTypes, ErrorFlow } from './../enums';
 import { ResultErrorModel, KeyModel } from './../models';

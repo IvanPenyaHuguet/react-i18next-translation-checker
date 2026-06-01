@@ -1,23 +1,27 @@
 import 'mocha';
 
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { assert, expect } from 'chai';
 
 import {
     config as defaultConfig,
     ErrorTypes,
-    IRulesConfig,
     KeyModelWithLanguages,
     LanguagesModel,
     ReactI18nextLint,
     ResultCliModel,
     ToggleRule,
 } from './../../src/core';
+import type { IRulesConfig } from './../../src/core';
+import { Cli } from './../../src/cli/cli';
 
 import { assertFullModel } from './results/arguments.full';
 import { assertDefaultModel } from './results/default.full';
 import { assertCustomConfig } from './results/custom.config';
 import { configValues } from './results/config.values';
+
+const __dirname: string = path.dirname(fileURLToPath(import.meta.url));
 
 function normalizeErrors(errors: ResultCliModel['errors']): object[] {
     return errors
@@ -292,6 +296,53 @@ describe('Core Integration', () => {
         });
     });
     describe('API', () => {
+        describe('lint', () => {
+            it('should keep lint sync and lintAsync async', async () => {
+                // Act
+                const model: ReactI18nextLint = new ReactI18nextLint(projectWithMaskPath, languagesWithMaskPath);
+                const syncResult: ResultCliModel = model.lint();
+                const asyncResult: Promise<ResultCliModel> = model.lintAsync();
+
+                // Assert
+                assert.instanceOf(syncResult, ResultCliModel);
+                assert.instanceOf(asyncResult, Promise);
+                assert.instanceOf(await asyncResult, ResultCliModel);
+            });
+        });
+        describe('Cli', () => {
+            it('should keep init and runLint sync with async alternatives', async () => {
+                // Arrange
+                const cli: Cli = new Cli([]);
+                const errorType: ErrorTypes = ErrorTypes.disable;
+
+                // Act
+                const initResult: void = cli.init();
+                const syncResult: void = cli.runLint(
+                    projectWithMaskPath,
+                    languagesWithMaskPath,
+                    errorType,
+                    errorType,
+                    undefined,
+                    undefined,
+                    errorType,
+                );
+                const asyncResult: Promise<void> = cli.runLintAsync(
+                    projectWithMaskPath,
+                    languagesWithMaskPath,
+                    errorType,
+                    errorType,
+                    undefined,
+                    undefined,
+                    errorType,
+                );
+
+                // Assert
+                assert.isUndefined(initResult);
+                assert.isUndefined(syncResult);
+                assert.instanceOf(asyncResult, Promise);
+                await asyncResult;
+            });
+        });
         describe('getLanguages', () => {
            it('should be correct', async() => {
                // Arrange

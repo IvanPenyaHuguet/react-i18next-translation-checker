@@ -10,4 +10,4 @@ interface IRulesConfig {
     customRegExpToFindKeys: string[] | RegExp[];
 }
 
-export { IRulesConfig };
+export type { IRulesConfig };

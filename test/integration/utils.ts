@@ -1,5 +1,7 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname: string = path.dirname(fileURLToPath(import.meta.url));
 const projectFolder: string = path.resolve(__dirname, './inputs/views/');
 const languagesFolder: string = path.resolve(__dirname, './inputs/locales/');
 

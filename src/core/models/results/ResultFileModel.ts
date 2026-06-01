@@ -1,6 +1,6 @@
 import { ErrorTypes } from "../../enums";
 import { ResultErrorModel } from "./ResultErrorModel";
-import { IValidationMessage } from "./../../interface";
+import type { IValidationMessage } from "./../../interface";
 
 class ResultFileModel implements  IValidationMessage {
     public value?: string;

@@ -1,4 +1,4 @@
-import { chain, map, union } from 'lodash';
+import { chain, map, union } from 'lodash-es';
 
 import { KeyModel } from "./../models";
 import { ToggleRule } from './../enums';
