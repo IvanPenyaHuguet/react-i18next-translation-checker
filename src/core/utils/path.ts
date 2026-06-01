@@ -1,5 +1,5 @@
-import path from 'path';
-import { glob } from 'glob';
+import * as path from 'node:path';
+import * as glob from 'glob';
 import dirGlob from 'dir-glob';
 import { concat } from 'lodash';
 
@@ -11,11 +11,13 @@ class PathUtils {
     public static getNormalizeFiles(folder: string, ignores: string[] = []): string[] {
         const correctFilesPathList: string[] = dirGlob.sync(PathUtils.resolvePath(folder), {
             extensions: [ 'html', 'ts', 'json', 'js']
+        }).map((filePath: string) => {
+            return filePath.split(path.sep).join('/');
         });
         const correctIgnorePath: string[] = ignores.map((path: string) => PathUtils.resolvePath(path.trim()));
 
-        const result: string[] = correctFilesPathList.reduce((acum: string[], path: string) => {
-            const filesPathList: string[] = glob.sync(path, {
+        const result: string[] = correctFilesPathList.reduce((acum: string[], filePath: string) => {
+            const filesPathList: string[] = glob.globSync(filePath, {
                 ignore: correctIgnorePath,
             });
             acum = concat(acum, filesPathList);

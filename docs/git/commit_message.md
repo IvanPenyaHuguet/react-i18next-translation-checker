@@ -15,23 +15,23 @@ The header has a special format that includes a [type](#type) and a [subject](#s
 <footer>
 ```
 
-> Note: Also you can use exactly [Conventional Commits 1.0.0-beta.4](#conventional_commits)
+> Note: Also you can use exactly [Conventional Commits 1.0.0-beta.4][conventional_commits]
 
 ## Type
 
 Must be one of the following:
 
-| name         | description |
-| :-:          | -       |
-| docs         | Documentation only changes |
-| feat         | A new feature |
-| fix          | A bug fix |
-| perf         | A code change that improves performance |
-| refactor     | A code change that neither fixes a bug or adds a feature |
-| style        | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, e.t.c) |
-| test         | Adding missing tests or correcting existing tests |
-| breaking     | For a backward-incompatible enhancement or feature |
-| ci           | Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs) |
+| name     | description                                                                                                  |
+| :------: | ------------------------------------------------------------------------------------------------------------ |
+| docs     | Documentation only changes                                                                                   |
+| feat     | A new feature                                                                                                |
+| fix      | A bug fix                                                                                                    |
+| perf     | A code change that improves performance                                                                      |
+| refactor | A code change that neither fixes a bug or adds a feature                                                     |
+| style    | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, e.t.c)     |
+| test     | Adding missing tests or correcting existing tests                                                            |
+| breaking | For a backward-incompatible enhancement or feature                                                           |
+| ci       | Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)  |
 
 ## Subject
 

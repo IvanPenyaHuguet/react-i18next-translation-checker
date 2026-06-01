@@ -28,7 +28,8 @@ const cliOptions: OptionModel[] = [
         default: config.defaultValues.languagesPath,
         values: [
             OptionsPath.relative,
-            OptionsPath.absolute
+            OptionsPath.absolute,
+            OptionsPath.URL
         ]
     }),
     new OptionModel({
@@ -122,15 +123,7 @@ const cliOptions: OptionModel[] = [
             OptionsPath.relative,
             OptionsPath.absolute
         ]
-    }),
-    new OptionModel({
-        longName: OptionsLongNames.version,
-        shortName: OptionsShortNames.version,
-        required: false,
-        description: 'Print current version of react-i18next-translation-checker',
-        type: ArgumentTypes.undefined,
-        additionalDescription: '',
-    }),
+    })
 ];
 
 export  { cliOptions };

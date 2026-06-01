@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import commander from 'commander';
 
 import { OptionModel } from './models';
 import {
@@ -10,12 +9,12 @@ import {
     ResultCliModel,
     ResultModel,
     StatusCodes,
-    ToggleRule
+    ToggleRule,
+    red,
 } from "./../core";
 
 import { config } from './../core/config';
 import { OptionsLongNames } from './enums';
-import chalk from 'chalk';
 import { parseJsonFile, getPackageJsonPath } from './utils';
 
 const name: string = 'react-i18next-translation-checker';
@@ -32,36 +31,42 @@ Examples:
     $ ${name} -p ${config.defaultValues.projectPath} -l ${config.defaultValues.languagesPath}
     $ ${name} -p ${config.defaultValues.projectPath} -z ${ErrorTypes.disable} -v ${ErrorTypes.error}
     $ ${name} -p ${config.defaultValues.projectPath} -i ./src/assets/i18n/EN-us.json, ./src/app/app.*.{json}
+    $ ${name} -p ${config.defaultValues.projectPath} -l https://8.8.8.8/locales/EN-eu.json
 
 `
 };
 
 class Cli {
-    private cliClient: commander.CommanderStatic = commander;
+    // tslint:disable-next-line:no-any
+    private cliClient: any;
     private cliOptions: OptionModel[] = [];
 
     constructor(options: OptionModel[]) {
         this.cliOptions = options;
     }
 
-    public static run(options: OptionModel[]): void {
+    public static async run(options: OptionModel[]): Promise<void> {
         const cli: Cli = new Cli(options);
-        cli.init();
+        await cli.init();
         cli.parse();
-        cli.runCli();
+        await cli.runCli();
     }
 
-    public init(options: OptionModel[] = this.cliOptions): void {
+    public async init(options: OptionModel[] = this.cliOptions): Promise<void> {
+        // tslint:disable-next-line:no-any
+        const commander: any = await import('commander');
+        this.cliClient = commander.program;
+
         options.forEach((option: OptionModel) => {
             const optionFlag: string = option.getFlag();
             const optionDescription: string = option.getDescription();
             const optionDefaultValue: string | ErrorTypes | undefined = option.default;
-            this.cliClient.option(optionFlag, optionDescription, optionDefaultValue);
+            this.cliClient.addOption(new commander.Option(optionFlag, optionDescription).default(optionDefaultValue));
         });
 
         // tslint:disable-next-line:no-any
         const packageJson: any = parseJsonFile(getPackageJsonPath());
-        this.cliClient.version(packageJson.version);
+        this.cliClient.version(packageJson.version, '-v, --version', `Print current version of ${name}`);
 
         this.cliClient
             .name(docs.name)
@@ -73,10 +78,10 @@ class Cli {
             });
     }
 
-    public runCli(): void {
+    public async runCli(): Promise<void> {
         try {
             // tslint:disable-next-line:no-any
-            const options: any = this.cliClient.config ? parseJsonFile(this.cliClient.config) : this.cliClient;
+            const options: any = this.cliClient.config ? parseJsonFile(this.cliClient.config) : this.cliClient.opts();
             const projectPath: string = options.project;
             const languagePath: string = options.languages;
             const tsConfigPath: string = options.tsConfigPath;
@@ -114,7 +119,7 @@ class Cli {
             this.printCurrentVersion();
 
             if (options.project && options.languages) {
-                this.runLint(
+                await this.runLint(
                     projectPath, languagePath, optionZombiesRule,
                     optionViewsRule, optionIgnore, optionMaxWarning, optionEmptyKey, deepSearch,
                     optionIgnoredKeys, optionCustomRegExpToFindKeys, tsConfigPath
@@ -143,7 +148,7 @@ class Cli {
     private validate(): boolean {
         const requiredOptions: OptionModel[] = this.cliOptions.filter((option: OptionModel) => option.required);
         const missingRequiredOption: boolean = requiredOptions.reduce((accum: boolean, option: OptionModel) => {
-            if (!this.cliClient[String(option.longName)]) {
+            if (!this.cliClient.opts()[String(option.longName)]) {
                 accum = false;
                 // tslint:disable-next-line: no-console
                 console.error(`Missing required argument: ${option.getFlag()}`);
@@ -154,7 +159,7 @@ class Cli {
         return missingRequiredOption;
     }
 
-    public runLint(
+    public async runLint(
         project: string,
         languages: string,
         zombies?: ErrorTypes,
@@ -166,7 +171,7 @@ class Cli {
         ignoredKeys: string[] = [],
         customRegExpToFindKeys: string[] | RegExp[] = [],
         tsConfigPath?: string,
-    ): void {
+    ): Promise<void> {
             const errorConfig: IRulesConfig = {
                 deepSearch: deepSearch || ToggleRule.disable,
                 zombieKeys: zombies || ErrorTypes.warning,
@@ -177,7 +182,7 @@ class Cli {
                 customRegExpToFindKeys,
             };
             const validationModel: ReactI18nextLint = new ReactI18nextLint(project, languages, ignore, errorConfig, tsConfigPath);
-            const resultCliModel: ResultCliModel = validationModel.lint(maxWarning);
+            const resultCliModel: ResultCliModel = await validationModel.lint(maxWarning);
             const resultModel: ResultModel = resultCliModel.getResultModel();
             resultModel.printResult();
             resultModel.printSummery();
@@ -185,7 +190,7 @@ class Cli {
             process.exitCode = resultCliModel.exitCode();
 
             if (resultModel.hasError) {
-                throw new FatalErrorModel(chalk.red(resultModel.message));
+                throw new FatalErrorModel(red(resultModel.message));
             }
     }
 
